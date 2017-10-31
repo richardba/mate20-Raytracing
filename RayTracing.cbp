@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="RayTracing" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/data/RayTracing" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/data/RayTracing" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="Code/Ben_Ridgen.cpp" />
+		<Unit filename="Code/Cylinder.cpp" />
+		<Unit filename="Code/Cylinder.h" />
+		<Unit filename="Code/Plane.cpp" />
+		<Unit filename="Code/Plane.h" />
+		<Unit filename="Code/Ray.cpp" />
+		<Unit filename="Code/Ray.h" />
+		<Unit filename="Code/SceneObject.cpp" />
+		<Unit filename="Code/SceneObject.h" />
+		<Unit filename="Code/Sphere.cpp" />
+		<Unit filename="Code/Sphere.h" />
+		<Unit filename="Code/TextureBMP.cpp" />
+		<Unit filename="Code/TextureBMP.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

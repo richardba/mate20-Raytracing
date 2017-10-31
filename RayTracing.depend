@@ -1,0 +1,73 @@
+# depslib dependency file v1.0
+1509464201 source:/home/ricardo/workspace/RayTracing/Code/Ben_Ridgen.cpp
+	<iostream>
+	<cmath>
+	<vector>
+	<glm/glm.hpp>
+	<math.h>
+	"Sphere.h"
+	"Plane.h"
+	"SceneObject.h"
+	"Ray.h"
+	"TextureBMP.h"
+	<GL/glut.h>
+
+1509457997 /home/ricardo/workspace/RayTracing/Code/Sphere.h
+	<glm/glm.hpp>
+	"SceneObject.h"
+
+1509457997 /home/ricardo/workspace/RayTracing/Code/SceneObject.h
+	<glm/glm.hpp>
+
+1509457997 /home/ricardo/workspace/RayTracing/Code/Plane.h
+	<glm/glm.hpp>
+	"SceneObject.h"
+
+1509457997 /home/ricardo/workspace/RayTracing/Code/Ray.h
+	<glm/glm.hpp>
+	<vector>
+	"SceneObject.h"
+
+1509457997 /home/ricardo/workspace/RayTracing/Code/TextureBMP.h
+	<iostream>
+	<fstream>
+	<glm/glm.hpp>
+
+1509457997 source:/home/ricardo/workspace/RayTracing/Code/Cylinder.cpp
+	"Cylinder.h"
+	<math.h>
+
+1509457997 /home/ricardo/workspace/RayTracing/Code/Cylinder.h
+	<glm/glm.hpp>
+	"SceneObject.h"
+
+1509457997 source:/home/ricardo/workspace/RayTracing/Code/Plane.cpp
+	"Plane.h"
+	<math.h>
+
+1509457997 source:/home/ricardo/workspace/RayTracing/Code/Ray.cpp
+	"Ray.h"
+
+1509457997 source:/home/ricardo/workspace/RayTracing/Code/SceneObject.cpp
+	"SceneObject.h"
+
+1509457997 source:/home/ricardo/workspace/RayTracing/Code/Sphere.cpp
+	"Sphere.h"
+	<math.h>
+
+1509457997 source:/home/ricardo/workspace/RayTracing/Code/TextureBMP.cpp
+	"TextureBMP.h"
+
+1509469277 source:/home/ricardo/workspace/RayTracing/Code/main.cpp
+	<iostream>
+	<cmath>
+	<vector>
+	<glm/glm.hpp>
+	<math.h>
+	"Sphere.h"
+	"Plane.h"
+	"SceneObject.h"
+	"Ray.h"
+	"TextureBMP.h"
+	<GL/glut.h>
+
