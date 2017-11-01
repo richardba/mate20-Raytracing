@@ -58,7 +58,7 @@
 1509457997 source:/home/ricardo/workspace/RayTracing/Code/TextureBMP.cpp
 	"TextureBMP.h"
 
-1509469277 source:/home/ricardo/workspace/RayTracing/Code/main.cpp
+1509532124 source:/home/ricardo/workspace/RayTracing/Code/main.cpp
 	<iostream>
 	<cmath>
 	<vector>
@@ -70,4 +70,55 @@
 	"Ray.h"
 	"TextureBMP.h"
 	<GL/glut.h>
+
+1509543908 source:/home/ricardo/workspace/RayTracing/main.cpp
+	<iostream>
+	<cmath>
+	<vector>
+	<glm/glm.hpp>
+	<GL/glut.h>
+	<math.h>
+	"Sphere.hpp"
+	"Plane.hpp"
+	"Scene.hpp"
+	"Ray.hpp"
+	"TextureBMP.h"
+
+1509543728 /home/ricardo/workspace/RayTracing/Sphere.hpp
+	<glm/glm.hpp>
+	"Scene.hpp"
+
+1509543728 /home/ricardo/workspace/RayTracing/Scene.hpp
+	<glm/glm.hpp>
+
+1509543728 /home/ricardo/workspace/RayTracing/Plane.hpp
+	<glm/glm.hpp>
+	"Scene.hpp"
+
+1509543651 /home/ricardo/workspace/RayTracing/Ray.hpp
+	<glm/glm.hpp>
+	<vector>
+	"Scene.hpp"
+
+1509541431 /home/ricardo/workspace/RayTracing/TextureBMP.h
+	<iostream>
+	<fstream>
+	<glm/glm.hpp>
+
+1509543503 source:/home/ricardo/workspace/RayTracing/Plane.cpp
+	"Plane.hpp"
+	<math.h>
+
+1509543442 source:/home/ricardo/workspace/RayTracing/Ray.cpp
+	"Ray.hpp"
+
+1509541408 source:/home/ricardo/workspace/RayTracing/Scene.cpp
+	"Scene.hpp"
+
+1509543728 source:/home/ricardo/workspace/RayTracing/Sphere.cpp
+	"Sphere.hpp"
+	<math.h>
+
+1509541417 source:/home/ricardo/workspace/RayTracing/TextureBMP.cpp
+	"TextureBMP.h"
 

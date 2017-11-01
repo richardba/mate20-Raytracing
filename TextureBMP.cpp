@@ -8,7 +8,7 @@
 //=====================================================================
 
 #include "TextureBMP.h"
-
+using namespace glm;
 TextureBMP::TextureBMP(char* filename)
 {
 	imageWid = 0;
@@ -23,26 +23,26 @@ TextureBMP::TextureBMP(char* filename)
 /**
  * Return color at texture coord (s, t) where s and t are in [0,1]
  */
-glm::vec3 TextureBMP::getColorAt(float s, float t)
+vec3 TextureBMP::getColorAt(float s, float t)
 {
-	if(imageWid == 0 || imageHgt == 0) return glm::vec3(0);
+	if(imageWid == 0 || imageHgt == 0.f) return vec3(0.f);
     int i = (int) (s * imageWid);  //pixel coordinates
     int j = (int) (t * imageHgt);
-	if(i < 0 || i > imageWid-1 || j < 0 || j > imageHgt-1) return glm::vec3(0);
+	if(i < 0 || i > imageWid-1 || j < 0 || j > imageHgt-1) return vec3(0.f);
     int index = ((j * imageWid) + i) * imageChnls;
 
     int r = imageData[index];
     int g = imageData[index + 1];
     int b = imageData[index + 2];
 
-	if(r < 0) r += 255;   //Unsigned byte values
-	if(g < 0) g += 255;
-	if(b < 0) b += 255;
- 
+	if(r < 0.f) r += 255;   //Unsigned byte values
+	if(g < 0.f) g += 255;
+	if(b < 0.f) b += 255;
+
     float rn = (float)r / 255.0;  //Normalized colour values
     float gn = (float)g / 255.0;
     float bn = (float)b / 255.0;
-    return glm::vec3(rn, gn, bn);
+    return vec3(rn, gn, bn);
 }
 
 bool TextureBMP::loadBMPImage(char* filename)

@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include <glm/glm.hpp>
+using namespace glm;
 using namespace std;
 
 class TextureBMP
@@ -22,9 +23,9 @@ class TextureBMP
         char* imageData;
         bool loadBMPImage(char* string);
     public:
-		TextureBMP(): imageWid(0), imageHgt(0), imageChnls(0) {}
+		TextureBMP(): imageWid(0.f), imageHgt(0.f), imageChnls(0.f) {}
         TextureBMP(char* string);
-        glm::vec3 getColorAt(float s, float t);
+        vec3 getColorAt(float s, float t);
 };
 
 #endif
