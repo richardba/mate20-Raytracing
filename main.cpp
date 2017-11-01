@@ -292,8 +292,8 @@ void createSpheres()
 void createFloor()
 {
 
-	Plane *plane = new Plane (vec3(-200.f, -20.f, 200.f),
-                            vec3(200.f, -20.f, 200.f),
+	Plane *plane = new Plane (vec3(-200.f, -20.f, 0.f),
+                            vec3(200.f, -20.f, 0.f),
                             vec3(200.f, -20.f, -200.f),
                             vec3(-200.f, -20.f, -200.f),
                             vec3(1));
@@ -359,7 +359,7 @@ void initialize()
 	createSpheres();
 	createFloor();
 	createBox();
-	char* s = (char *)"Squares.bmp";
+	char* s = (char *)"Texture.bmp";
 	texture = TextureBMP(s);
 }
 

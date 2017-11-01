@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="RayTracing" />
+		<Option title="Raytracing Mate20" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -31,19 +31,17 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="Code/Ben_Ridgen.cpp" />
-		<Unit filename="Code/Cylinder.cpp" />
-		<Unit filename="Code/Cylinder.h" />
-		<Unit filename="Code/Plane.cpp" />
-		<Unit filename="Code/Plane.h" />
-		<Unit filename="Code/Ray.cpp" />
-		<Unit filename="Code/Ray.h" />
-		<Unit filename="Code/SceneObject.cpp" />
-		<Unit filename="Code/SceneObject.h" />
-		<Unit filename="Code/Sphere.cpp" />
-		<Unit filename="Code/Sphere.h" />
-		<Unit filename="Code/TextureBMP.cpp" />
-		<Unit filename="Code/TextureBMP.h" />
+		<Unit filename="Plane.cpp" />
+		<Unit filename="Plane.hpp" />
+		<Unit filename="Ray.cpp" />
+		<Unit filename="Ray.hpp" />
+		<Unit filename="Scene.cpp" />
+		<Unit filename="Scene.hpp" />
+		<Unit filename="Sphere.cpp" />
+		<Unit filename="Sphere.hpp" />
+		<Unit filename="TextureBMP.cpp" />
+		<Unit filename="TextureBMP.h" />
+		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
