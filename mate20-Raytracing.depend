@@ -173,3 +173,54 @@
 	"Ray.hpp"
 	"TextureBMP.h"
 
+1510238212 source:/home/ricardo/Workspace/mate20-Raytracing/main.cpp
+	<iostream>
+	<cmath>
+	<vector>
+	<glm/glm.hpp>
+	<GL/glut.h>
+	<math.h>
+	"Sphere.hpp"
+	"Plane.hpp"
+	"Scene.hpp"
+	"Ray.hpp"
+	"TextureBMP.h"
+
+1509543728 /home/ricardo/Workspace/mate20-Raytracing/Sphere.hpp
+	<glm/glm.hpp>
+	"Scene.hpp"
+
+1509543728 /home/ricardo/Workspace/mate20-Raytracing/Scene.hpp
+	<glm/glm.hpp>
+
+1509543728 /home/ricardo/Workspace/mate20-Raytracing/Plane.hpp
+	<glm/glm.hpp>
+	"Scene.hpp"
+
+1510237619 /home/ricardo/Workspace/mate20-Raytracing/Ray.hpp
+	<glm/glm.hpp>
+	<vector>
+	"Scene.hpp"
+
+1509541431 /home/ricardo/Workspace/mate20-Raytracing/TextureBMP.h
+	<iostream>
+	<fstream>
+	<glm/glm.hpp>
+
+1509543503 source:/home/ricardo/Workspace/mate20-Raytracing/Plane.cpp
+	"Plane.hpp"
+	<math.h>
+
+1510237619 source:/home/ricardo/Workspace/mate20-Raytracing/Ray.cpp
+	"Ray.hpp"
+
+1509541408 source:/home/ricardo/Workspace/mate20-Raytracing/Scene.cpp
+	"Scene.hpp"
+
+1509543728 source:/home/ricardo/Workspace/mate20-Raytracing/Sphere.cpp
+	"Sphere.hpp"
+	<math.h>
+
+1510238316 source:/home/ricardo/Workspace/mate20-Raytracing/TextureBMP.cpp
+	"TextureBMP.h"
+

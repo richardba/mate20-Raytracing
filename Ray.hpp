@@ -31,7 +31,7 @@ class Ray
     };
 
     void normalize();
-    void closestPt(std::vector<Scene*> &Scenes);
+    void intersect(std::vector<Scene*> &Scenes);
 
 };
 #endif

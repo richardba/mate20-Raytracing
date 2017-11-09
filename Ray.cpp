@@ -7,7 +7,7 @@ void Ray::normalize()
   direction = glm::normalize(direction);
 }
 
-void Ray::closestPt(std::vector<Scene*> &Scenes)
+void Ray::intersect(std::vector<Scene*> &Scenes)
 {
   vec3 point(0.f,0.f,0.f);
   float min = 1.e+6;
