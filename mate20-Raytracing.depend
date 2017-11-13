@@ -173,13 +173,15 @@
 	"Ray.hpp"
 	"TextureBMP.h"
 
-1510238212 source:/home/ricardo/Workspace/mate20-Raytracing/main.cpp
+1510595272 source:/home/ricardo/Workspace/mate20-Raytracing/main.cpp
 	<iostream>
 	<cmath>
 	<vector>
 	<glm/glm.hpp>
-	<GL/glut.h>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
 	<math.h>
+	<vector>
 	"Sphere.hpp"
 	"Plane.hpp"
 	"Scene.hpp"

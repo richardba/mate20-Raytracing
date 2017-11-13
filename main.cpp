@@ -2,8 +2,10 @@
 #include <cmath>
 #include <vector>
 #include <glm/glm.hpp>
-#include <GL/glut.h>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <math.h>
+#include <vector>
 #include "Sphere.hpp"
 #include "Plane.hpp"
 #include "Scene.hpp"
@@ -20,8 +22,9 @@ float drand()
 using namespace std;
 
 //Controle do nível de resolução e recursão
-const int recursionLevel = 5;
+const int recursionLevel = 3;
 const int resolutionLevel = 200;
+const int resolutionLevel2 = resolutionLevel*resolutionLevel;
 
 const float bandWidth = -25.f;
 const float bandHeight =  25.f;
@@ -39,164 +42,81 @@ vec3 light(9.f, 35.f, -4.f);
 TextureBMP texture;
 vector<Scene*> Scenes;
 
-void keyboardSpecial(int key, int x, int y)
-{
-  switch (key)
-  {
-    case GLUT_KEY_LEFT :
-      theta += 2.f;
-      if(theta>360.f)
-        theta=-360.f;
-      glutPostRedisplay();
-      break;
-    case GLUT_KEY_RIGHT :
-      theta -= 2.f;
-      if(theta<-360.f)
-        theta=360.f;
-      glutPostRedisplay();
-      break;
-    case GLUT_KEY_UP :
-      phi -= 2.f;
-      if(phi<-360.f)
-        phi=360.f;
-      glutPostRedisplay();
-      break;
-		case GLUT_KEY_DOWN :
-		  phi += 2.f;
-      if(phi<-360.f)
-        phi=360.f;
-      glutPostRedisplay();
-      break;
-  }
-}
-void keyboard(unsigned char key, int x, int y)
-{
+vec3 image[resolutionLevel2];
 
-  switch (key)
+void keyCallback(GLFWwindow* win, int key, int scancode, int action, int mods)
+{
+  if(key== GLFW_KEY_B && (action == GLFW_PRESS||action == GLFW_REPEAT))
   {
-    case 'B':
-    case 'b':
-      ballMode =! ballMode;
-      lightMode = false;
-      cout << "Ballmode: " << ballMode << endl;
-      break;
-    case 'L':
-    case 'l':
-      lightMode =! lightMode;
-      ballMode = false;
-      cout << "Lightmode: " << lightMode << endl;
-      break;
-    case 27: // ESCAPE key
-      exit (0);
+    ballMode =! ballMode;
+    lightMode = false;
   }
-
+  if(key== GLFW_KEY_L && (action == GLFW_PRESS||action == GLFW_REPEAT))
+  {
+    lightMode =! lightMode;
+    ballMode = false;
+  }
   if(!ballMode&&!lightMode)
-    switch (key)
-    {
-      case 'W':
-      case 'w':
-        atZ -= 2.f;
-        glutPostRedisplay();
-        break;
-      case 'S':
-      case 's':
-        atZ += 2.f;
-        glutPostRedisplay();
-        break;
-      case 'A':
-      case 'a':
-        atX -= 2.f;
-        glutPostRedisplay();
-        break;
-      case 'D':
-      case 'd':
-        atX += 2.f;
-        glutPostRedisplay();
-        break;
-      case 'c':
-      case 'C':
-        atY -= 2.f;
-        glutPostRedisplay();
-        break;
-      case 32: // ESPACE BAR key
-        atY += 2.f;
-        glutPostRedisplay();
-        break;
-      case 'm':
-        focalDistance += 1;
-        glutPostRedisplay();
-        break;
-      case 'n':
-        focalDistance -= 1;
-        glutPostRedisplay();
-        break;
-    }
-    else if(lightMode)
-      switch(key)
-      {
-        case 'W':
-        case 'w':
-          light.z = light.z - 2.f;
-          glutPostRedisplay();
-          break;
-        case 'S':
-        case 's':
-          light.z = light.z + 2.f;
-          glutPostRedisplay();
-          break;
-        case 'A':
-        case 'a':
-          light.x = light.x - 2.f;
-          glutPostRedisplay();
-          break;
-        case 'D':
-        case 'd':
-          light.x = light.x + 2.f;
-          glutPostRedisplay();
-          break;
-        case 'c':
-        case 'C':
-          light.y = light.y - 2.f;
-          glutPostRedisplay();
-          break;
-        case 32: // ESPACE BAR key
-          light.y = light.y + 2.f;
-          glutPostRedisplay();
-          break;
-      }
-    else
-      switch(key)
-      {
-        case 'W':
-        case 'w':
-          sphere1->center.z = sphere1->center.z - 2.f;
-          glutPostRedisplay();
-          break;
-        case 'S':
-        case 's':
-          sphere1->center.z = sphere1->center.z + 2.f;
-          glutPostRedisplay();
-          break;
-        case 'A':
-        case 'a':
-          sphere1->center.x = sphere1->center.x - 2.f;
-          glutPostRedisplay();
-          break;
-        case 'D':
-        case 'd':
-          sphere1->center.x = sphere1->center.x + 2.f;
-          glutPostRedisplay();
-          break;
-        case 'c':
-        case 'C':
-          sphere1->center.y = sphere1->center.y - 2.f;
-          glutPostRedisplay();
-          break;
-        case 32: // ESPACE BAR key
-          sphere1->center.y = sphere1->center.y + 2.f;
-          glutPostRedisplay();
-          break;
-      }
+  {
+    if(key == GLFW_KEY_LEFT && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      theta += 2.f;
+    if(key == GLFW_KEY_RIGHT && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      theta -= 2.f;
+    if(key == GLFW_KEY_UP && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      phi -= 2.f;
+    if(key == GLFW_KEY_DOWN && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      phi += 2.f;
+    if(key == GLFW_KEY_W && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      atZ -= 2.f;
+    if(key == GLFW_KEY_S && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      atZ += 2.f;
+    if(key == GLFW_KEY_A && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      atX -= 2.f;
+    if(key == GLFW_KEY_D && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      atX += 2.f;
+    if(key == GLFW_KEY_C && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      atY -= 2.f;
+    if(key == GLFW_KEY_SPACE && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      atY += 2.f;
+    if(key == GLFW_KEY_M && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      focalDistance += 1;
+    if(key == GLFW_KEY_N && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      focalDistance -= 1;
+  }
+  else if(lightMode)
+  {
+    if(key == GLFW_KEY_W && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      light.z = light.z - 2.f;
+    if(key == GLFW_KEY_S && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      light.z = light.z + 2.f;
+    if(key == GLFW_KEY_A && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      light.x = light.x - 2.f;
+    if(key == GLFW_KEY_D && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      light.x = light.x + 2.f;
+    if(key == GLFW_KEY_C && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      light.y = light.y - 2.f;
+    if(key == GLFW_KEY_SPACE && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      light.y = light.y + 2.f;
+  }
+  else
+  {
+    if(key == GLFW_KEY_W && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      sphere1->center.z = sphere1->center.z - 2.f;
+    if(key == GLFW_KEY_S && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      sphere1->center.z = sphere1->center.z + 2.f;
+    if(key == GLFW_KEY_A && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      sphere1->center.x = sphere1->center.x - 2.f;
+    if(key == GLFW_KEY_D && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      sphere1->center.x = sphere1->center.x + 2.f;
+    if(key == GLFW_KEY_C && (action == GLFW_PRESS||action == GLFW_REPEAT))
+      sphere1->center.y = sphere1->center.y - 2.f;
+    if(key == GLFW_KEY_SPACE && (action == GLFW_PRESS||action == GLFW_REPEAT)) // ESPACE BAR key
+      sphere1->center.y = sphere1->center.y + 2.f;
+  }
+  if(theta<-360.f)
+    theta=360.f;
+  if(theta>360.f)
+    theta=-360.f;
 }
 
 vec3 proceduralTexture(Ray ray, float x, float y, float r, vec3 col1, vec3 col2, vec3 col3)
@@ -323,10 +243,7 @@ void display()
   vec3 eye(atX, atY, atZ);
 
   glClear(GL_COLOR_BUFFER_BIT);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
 
-  glBegin(GL_QUADS);
 
   for(int i = 0; i < resolutionLevel; i++)
   {
@@ -355,21 +272,15 @@ void display()
       vec3 col3 = rayTracing(ray3, 1);
       vec3 col4 = rayTracing(ray4, 1);
 
+
+      //% 256 ) * 256 * 256 * 256
       vec3 col;
       col.r = (col1.r + col2.r + col3.r + col4.r) / 4;
       col.g = (col1.g + col2.g + col3.g + col4.g) / 4;
       col.b = (col1.b + col2.b + col3.b + col4.b) / 4;
-
-      glColor3f(col.r, col.g, col.b);
-      glVertex2f(xp, yp);
-      glVertex2f(xp+cellX, yp);
-      glVertex2f(xp+cellX, yp+cellY);
-      glVertex2f(xp, yp+cellY);
+      image[resolutionLevel*j+i] = col;
     }
   }
-
-  glEnd();
-  glFlush();
 }
 
 void createSpheres()
@@ -449,10 +360,6 @@ void createBox()
 
 void initialize()
 {
-  glMatrixMode(GL_PROJECTION);
-  gluOrtho2D(bandWidth, bandHeight, minimal, maximal);
-  glClearColor(0, 0, 0, 1);
-
 	createSpheres();
 	createFloor();
 	createBox();
@@ -460,17 +367,73 @@ void initialize()
 	texture = TextureBMP(s);
 }
 
-int main(int argc, char *argv[])
+void drawRayTracing()
 {
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB );
-  glutInitWindowSize(300.f, 300.f);
-  glutInitWindowPosition(20.f, 20.f);
-  glutCreateWindow("Ray Tracer");
-  initialize();
-  glutDisplayFunc(display);
-  glutKeyboardFunc(keyboard);
-  glutSpecialFunc(keyboardSpecial);
-  glutMainLoop();
-  return 0;
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  display();
+  glBufferSubData(GL_PIXEL_UNPACK_BUFFER, 0, sizeof(glm::vec3)*resolutionLevel2, image);
+  glDrawPixels(resolutionLevel, resolutionLevel, GL_RGB, GL_FLOAT, 0);
+}
+
+int main(int argc, char* argv[])
+{
+  GLFWwindow* window;
+  	// Initialise GLFW
+	if( !glfwInit() )
+	{
+		cout << "Erro ao inicializar o GLFW!" << endl;
+		cin >> argc;
+    return EXIT_FAILURE;
+	}
+
+  glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+  glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+	// Open a window and create its OpenGL context
+	window = glfwCreateWindow( resolutionLevel, resolutionLevel, "Ray Tracer", NULL, NULL);
+	if( window == NULL )
+  {
+    cout << "Erro ao inicializar o GLFW!" << endl;
+		cin >> argc;
+    return EXIT_FAILURE;
+	}
+
+	glfwSetKeyCallback(window, keyCallback);
+	const GLFWvidmode mode = *glfwGetVideoMode(glfwGetPrimaryMonitor());
+  glfwSetWindowPos(window, (mode.width-resolutionLevel)/2, (mode.height-resolutionLevel)/2);
+  glfwShowWindow(window);
+  glfwMakeContextCurrent(window);
+  glClearColor(0.1f, 0.1f, drand(), 1.f);
+
+  glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+
+  glewExperimental=GL_TRUE;
+	if (glewInit() != GLEW_OK)
+  {
+		cout << "Erro ao inicializar o GLEW!" << endl;
+		cin >> argc;
+		glfwTerminate();
+		return EXIT_FAILURE;
+  }
+
+  unsigned int PBO;
+  glGenBuffers(1, &PBO);
+  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, PBO);
+  glBufferData(GL_PIXEL_UNPACK_BUFFER, sizeof(glm::vec3)*resolutionLevel2, image, GL_DYNAMIC_DRAW);
+
+ 	initialize();
+
+	do
+	{
+	  drawRayTracing();
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+  }
+	while(glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == 0 );
+  glfwTerminate();
+
+  return EXIT_SUCCESS;
 }
