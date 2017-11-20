@@ -6,16 +6,19 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Debug">
+			<Target title="Billboards">
 				<Option output="bin/tutorial18_billboards_and_particles" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
+				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-g" />
+					<Add option="-O2" />
 				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
 			</Target>
-			<Target title="Release">
+			<Target title="Particles">
 				<Option output="bin/tutorial18_billboards_and_particles" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
@@ -30,7 +33,29 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="../tutorial18_billboards_and_particles" />
 		</Compiler>
+		<Linker>
+			<Add library="libAntTweakBar" />
+		</Linker>
+		<Unit filename="../common/controls.cpp" />
+		<Unit filename="../common/controls.hpp" />
+		<Unit filename="../common/shader.cpp" />
+		<Unit filename="../common/shader.hpp" />
+		<Unit filename="../common/texture.cpp" />
+		<Unit filename="../common/texture.hpp" />
+		<Unit filename="Particle.frag">
+			<Option target="Particles" />
+		</Unit>
+		<Unit filename="Particle.vert">
+			<Option target="Particles" />
+		</Unit>
+		<Unit filename="tutorial18_billboards.cpp">
+			<Option target="Billboards" />
+		</Unit>
+		<Unit filename="tutorial18_particles.cpp">
+			<Option target="Particles" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />
