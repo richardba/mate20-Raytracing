@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1511185101 source:c:\users\richardba\workspace\ogl\tutorial18_billboards_and_particles\tutorial18_particles.cpp
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	<algorithm>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<glm/gtx/norm.hpp>
+	<ogl/common/shader.hpp>
+	<ogl/common/texture.hpp>
+	<ogl/common/controls.hpp>
+
