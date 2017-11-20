@@ -3,69 +3,32 @@
 
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 #include <GL/glew.h>
 
 #include <GLFW/glfw3.h>
 GLFWwindow* window;
-#define GLM_ENABLE_EXPERIMENTAL
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
+
+#include <AntTweakBar.h>
 using namespace glm;
+using namespace std;
 
+#include "../common/shader.hpp"
+#include "../common/texture.hpp"
+#include "../common/controls.hpp"
+#define WINDOW_H 1024
+#define WINDOW_W 768
 
-#include <ogl/common/shader.hpp>
-#include <ogl/common/texture.hpp>
-#include <ogl/common/controls.hpp>
-
-#define noiseSize 32
-
-double smoothNoise(double x, double y, double arr[][noiseSize])
+float inrand(float Min, float Max)
 {
-   //get fractional part of x and y
-   double fractX = x - int(x);
-   double fractY = y - int(y);
-
-   //wrap around
-   int x1 = (int(x) + noiseSize) % noiseSize;
-   int y1 = (int(y) + noiseSize) % noiseSize;
-
-   //neighbor values
-   int x2 = (x1 + noiseSize - 1) % noiseSize;
-   int y2 = (y1 + noiseSize - 1) % noiseSize;
-
-   //smooth the noise with bilinear interpolation
-   double value = 0.0;
-   value += fractX     * fractY     * arr[y1][x1];
-   value += (1 - fractX) * fractY     * arr[y1][x2];
-   value += fractX     * (1 - fractY) * arr[y2][x1];
-   value += (1 - fractX) * (1 - fractY) * arr[y2][x2];
-
-   return value;
+  return ((float(rand()) / float(RAND_MAX)) * (Max - Min)) + Min;
 }
 
-double turbulence(double x, double y, double size, double arr[][noiseSize])
-{
-  double value = 0.0, initialSize = size;
-
-  while(size >= 1)
-  {
-    value += smoothNoise(x / size, y / size, arr) * size;
-    size /= 2.0;
-  }
-
-  return(128.0 * value / initialSize);
-}
-
-void generateNoise(double arr[][noiseSize])
-{
-  for (int y = 0; y < noiseSize; y++)
-    for (int x = 0; x < noiseSize; x++)
-    {
-      arr[y][x] = (rand() % 32768) / 32768.0;
-    }
-}
 // CPU representation of a particle
 struct Particle{
 	glm::vec3 pos, speed;
@@ -81,6 +44,7 @@ struct Particle{
 };
 
 const int MaxParticles = 100000;
+const GLfloat distribution = 1000.0f;
 Particle ParticlesContainer[MaxParticles];
 int LastUsedParticle = 0;
 
@@ -106,18 +70,32 @@ int FindUnusedParticle(){
 }
 
 void SortParticles(){
-	std::sort(&ParticlesContainer[0], &ParticlesContainer[MaxParticles]);
+	sort(&ParticlesContainer[0], &ParticlesContainer[MaxParticles]);
 }
 
-int main( void )
+inline void TwEventMouseButtonGLFW3(GLFWwindow* window, int button, int action, int mods)
+{TwEventMouseButtonGLFW(button, action);}
+inline void TwEventMousePosGLFW3(GLFWwindow* window, double xpos, double ypos)
+{TwMouseMotion(int(xpos), int(ypos));}
+inline void TwEventMouseWheelGLFW3(GLFWwindow* window, double xoffset, double yoffset)
+{TwEventMouseWheelGLFW(yoffset);}
+inline void TwEventKeyGLFW3(GLFWwindow* window, int key, int scancode, int action, int mods)
+{TwEventKeyGLFW(key, action);}
+inline void TwEventCharGLFW3(GLFWwindow* window, int codepoint)
+{TwEventCharGLFW(codepoint, GLFW_PRESS);}
+inline void TwWindowSizeGLFW3(GLFWwindow* window, int width, int height)
+{TwWindowSize(width, height);}
+
+int main( int argv, char** argc )
 {
 	// Initialise GLFW
 	if( !glfwInit() )
 	{
-		fprintf( stderr, "Failed to initialize GLFW\n" );
-		getchar();
-		return -1;
+		cout << "Failed to initialize GLFW" << endl;
+		cin >> argv;
+		return EXIT_FAILURE;
 	}
+
 
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_RESIZABLE,GL_FALSE);
@@ -127,9 +105,10 @@ int main( void )
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow( 1024, 768, "Tutorial 18 - Particules", NULL, NULL);
-	if( window == NULL ){
-		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
+	window = glfwCreateWindow( WINDOW_H, WINDOW_W, "Tutorial 18 - Particules", NULL, NULL);
+	if( window == NULL )
+  {
+		cout << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible." << endl;
 		getchar();
 		glfwTerminate();
 		return -1;
@@ -138,24 +117,41 @@ int main( void )
 
 	// Initialize GLEW
 	glewExperimental = true; // Needed for core profile
-	if (glewInit() != GLEW_OK) {
-		fprintf(stderr, "Failed to initialize GLEW\n");
-		getchar();
+	if (glewInit() != GLEW_OK)
+  {
+		cout << "Failed to initialize GLEW" << endl;
+		cin >> argv;
 		glfwTerminate();
-		return -1;
+		return EXIT_FAILURE;
 	}
 
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     // Hide the mouse and enable unlimited mouvement
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    // Set the mouse at the center of the screen
-    glfwPollEvents();
-    glfwSetCursorPos(window, 1024/2, 768/2);
+  // Set the mouse at the center of the screen
+  glfwPollEvents();
+  glfwSetCursorPos(window, WINDOW_H/2, WINDOW_W/2);
+  if(!TwInit(TW_OPENGL_CORE, NULL))
+  {
+    cout << "Failed to initialize AntTweakBar" << endl;
+		cin >> argv;
+		return EXIT_FAILURE;
+  }
+  TwWindowSize(WINDOW_W, WINDOW_H);
+  TwBar *myBar;
+  myBar = TwNewBar("Acceleration");
+  TwDefine("Acceleration label='Clouds Inputs' position='10 280' size='240 100' alpha=64 help=' ' ");
+    glfwSetWindowSizeCallback(window, (GLFWwindowposfun)TwWindowSizeGLFW3);
 
+    glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)TwEventMouseButtonGLFW3);
+    glfwSetCursorPosCallback(window, (GLFWcursorposfun)TwEventMousePosGLFW3);
+    glfwSetScrollCallback(window, (GLFWscrollfun)TwEventMouseWheelGLFW3);
+    glfwSetKeyCallback(window, (GLFWkeyfun)TwEventKeyGLFW3);
+    glfwSetCharCallback(window, (GLFWcharfun)TwEventCharGLFW3);
 	// Dark blue background
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+	glClearColor(0.53f, 0.9f, 1.f, 0.0f);
 
 	// Enable depth test
 	glEnable(GL_DEPTH_TEST);
@@ -182,14 +178,15 @@ int main( void )
 	static GLfloat* g_particule_position_size_data = new GLfloat[MaxParticles * 4];
 	static GLubyte* g_particule_color_data         = new GLubyte[MaxParticles * 4];
 
-	for(int i=0; i<MaxParticles; i++){
+	for(int i=0; i<MaxParticles; i++)
+  {
 		ParticlesContainer[i].life = -1.0f;
 		ParticlesContainer[i].cameradistance = -1.0f;
 	}
 
 
 
-	GLuint Texture = loadDDS("particle.DDS");
+	GLuint tex = loadDDS("particle.DDS");
 
 	// The VBO containing the 4 vertices of the particles.
 	// Thanks to instancing, they will be shared by all particles.
@@ -219,10 +216,32 @@ int main( void )
 	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
 
 
+  float acceleration = 1.f;
+  GLuint threshold = 192;
 
+  TwAddVarRO(myBar, "Acceleration", TW_TYPE_FLOAT, &acceleration, "");
+  TwAddVarRO(myBar, "Threshold", TW_TYPE_INT16, &threshold, "");
 	double lastTime = glfwGetTime();
 	do
 	{
+    if (glfwGetKey( window, GLFW_KEY_EQUAL) == GLFW_PRESS && acceleration<=2)
+    {
+      acceleration+=0.05f;
+    }
+    if (glfwGetKey( window, GLFW_KEY_MINUS) == GLFW_PRESS)
+    {
+      acceleration/=2.f;
+    }
+    if (glfwGetKey( window, GLFW_KEY_O) == GLFW_PRESS && threshold<255)
+    {
+      threshold+=1;
+    }
+    if (glfwGetKey( window, GLFW_KEY_L) == GLFW_PRESS && threshold>0)
+    {
+      threshold-=1;
+    }
+    //GLuint Texture = tex*rand();
+    GLuint Texture = tex;
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -231,7 +250,7 @@ int main( void )
 		lastTime = currentTime;
 
 
-		computeMatricesFromInputs(window);
+		computeMatricesFromInputs();
 		glm::mat4 ProjectionMatrix = getProjectionMatrix();
 		glm::mat4 ViewMatrix = getViewMatrix();
 
@@ -251,38 +270,49 @@ int main( void )
 		if (newparticles > (int)(0.016f*10000.0))
 			newparticles = (int)(0.016f*10000.0);
 
-		for(int i=0; i<newparticles; i++){
+		for(int i=0; i<newparticles; i++)
+    {
 			int particleIndex = FindUnusedParticle();
 			ParticlesContainer[particleIndex].life = 5.0f; // This particle will live 5 seconds.
 			ParticlesContainer[particleIndex].pos = glm::vec3(0,0,-20.0f);
 
-			float spread = 1.5f;
-			glm::vec3 maindir = glm::vec3(0.0f, 10.0f, 0.0f);
-			// Very bad way to generate a random direction;
-			// See for instance http://stackoverflow.com/questions/5408276/python-uniform-spherical-distribution instead,
-			// combined with some user-controlled parameters (main direction, spread, etc)
-			glm::vec3 randomdir = glm::vec3(
-				(rand()%2000 - 1000.0f)/1000.0f,
-				(rand()%2000 - 1000.0f)/1000.0f,
-				(rand()%2000 - 1000.0f)/1000.0f
+			float spread = 3.5f;
+			glm::vec3 maindir = glm::vec3(0.0f, 0.0f, 10.0f);
+
+//			{
+//        GLfloat phi = inrand(0,2*M_PI);
+//        GLfloat cosTheta = inrand(-1,1);
+//        GLfloat u = inrand(0,1);
+//        GLfloat theta = acos(cosTheta);
+//        GLfloat r = (float)distribution*cbrt(u);
+//
+//        //Spherical Distribution
+//        glm::vec3 randomdir = glm::vec3(
+//          r * sin( theta) * cos( phi ),
+//          r * sin( theta) * sin( phi ),
+//          r * cos( theta )
+//        );
+//      }
+
+      glm::vec3 randomdir = glm::vec3(
+				(rand()%(int)(2*distribution) - distribution)/distribution,
+				(rand()%(int)(2*distribution) - distribution)/distribution,
+				(rand()%(int)(2*distribution) - distribution)/distribution
 			);
 
 			ParticlesContainer[particleIndex].speed = maindir + randomdir*spread;
 
-
+      unsigned char w = inrand(threshold,256);
 			// Very bad way to generate a random color
-			ParticlesContainer[particleIndex].r = rand() % 256;
-			ParticlesContainer[particleIndex].g = rand() % 256;
-			ParticlesContainer[particleIndex].b = rand() % 256;
-			ParticlesContainer[particleIndex].a = (rand() % 256) / 3;
+			ParticlesContainer[particleIndex].r = w;
+			ParticlesContainer[particleIndex].g = w;
+			ParticlesContainer[particleIndex].b = w;
+			ParticlesContainer[particleIndex].a = (rand() % 256) / 4;
 
-			ParticlesContainer[particleIndex].size = (rand()%1000)/2000.0f + 0.1f;
+			ParticlesContainer[particleIndex].size = (rand()%(int)distribution)/(2*distribution) + inrand(0,1);
 
 		}
 
-
-
-		// Simulate all particles
 		int ParticlesCount = 0;
 		for(int i=0; i<MaxParticles; i++){
 
@@ -292,10 +322,10 @@ int main( void )
 
 				// Decrease life
 				p.life -= delta;
-				if (p.life > 0.0f){
-
+				if (p.life > 0.0f)
+        {
 					// Simulate simple physics : gravity only, no collisions
-					p.speed += glm::vec3(0.0f,-9.81f, 0.0f) * (float)delta * 0.5f;
+					p.speed += glm::vec3(0.f, 0.f, 9.f*acceleration) * (float)delta * 0.5f;
 					p.pos += p.speed * (float)delta;
 					p.cameradistance = glm::length2( p.pos - CameraPosition );
 					//ParticlesContainer[i].pos += glm::vec3(0.0f,10.0f, 0.0f) * (float)delta;
@@ -312,7 +342,9 @@ int main( void )
 					g_particule_color_data[4*ParticlesCount+2] = p.b;
 					g_particule_color_data[4*ParticlesCount+3] = p.a;
 
-				}else{
+				}
+				else
+				{
 					// Particles that just died will be put at the end of the buffer in SortParticles();
 					p.cameradistance = -1.0f;
 				}
@@ -323,16 +355,6 @@ int main( void )
 		}
 
 		SortParticles();
-
-
-		//printf("%d ",ParticlesCount);
-
-
-		// Update the buffers that OpenGL uses for rendering.
-		// There are much more sophisticated means to stream data from the CPU to the GPU,
-		// but this is outside the scope of this tutorial.
-		// http://www.opengl.org/wiki/Buffer_Object_Streaming
-
 
 		glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
 		glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
@@ -347,6 +369,7 @@ int main( void )
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// Use our shader
+
 		glUseProgram(programID);
 
 		// Bind our texture in Texture Unit 0
@@ -411,7 +434,7 @@ int main( void )
 		// for(i in ParticlesCount) : glDrawArrays(GL_TRIANGLE_STRIP, 0, 4),
 		// but faster.
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticlesCount);
-
+    TwDraw();
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
@@ -432,11 +455,12 @@ int main( void )
 	glDeleteBuffers(1, &particles_position_buffer);
 	glDeleteBuffers(1, &billboard_vertex_buffer);
 	glDeleteProgram(programID);
-	glDeleteTextures(1, &Texture);
+	glDeleteTextures(1, &tex);
 	glDeleteVertexArrays(1, &VertexArrayID);
 
 
 	// Close OpenGL window and terminate GLFW
+	TwTerminate();
 	glfwTerminate();
 
 	return 0;

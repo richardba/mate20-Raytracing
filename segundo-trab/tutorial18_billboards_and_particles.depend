@@ -1,5 +1,40 @@
 # depslib dependency file v1.0
-1511185101 source:c:\users\richardba\workspace\ogl\tutorial18_billboards_and_particles\tutorial18_particles.cpp
+1491934773 source:/home/ricardo/Workspace/ogl/common/controls.cpp
+	<GLFW/glfw3.h>
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	"controls.hpp"
+
+1491934277 /home/ricardo/Workspace/ogl/common/controls.hpp
+
+1491934277 source:/home/ricardo/Workspace/ogl/common/shader.cpp
+	<stdio.h>
+	<string>
+	<vector>
+	<iostream>
+	<fstream>
+	<algorithm>
+	<stdlib.h>
+	<string.h>
+	<GL/glew.h>
+	"shader.hpp"
+
+1491934277 /home/ricardo/Workspace/ogl/common/shader.hpp
+
+1491936799 source:/home/ricardo/Workspace/ogl/common/texture.cpp
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<string>
+	<iostream>
+	<fstream>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	"texture.hpp"
+
+1491936777 /home/ricardo/Workspace/ogl/common/texture.hpp
+
+1511183979 source:/home/ricardo/Workspace/ogl/tutorial18_billboards_and_particles/tutorial18_billboards.cpp
 	<stdio.h>
 	<stdlib.h>
 	<vector>
@@ -9,7 +44,23 @@
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<glm/gtx/norm.hpp>
-	<ogl/common/shader.hpp>
-	<ogl/common/texture.hpp>
-	<ogl/common/controls.hpp>
+	"../common/shader.hpp"
+	"../common/texture.hpp"
+	"../common/controls.hpp"
+
+1511195819 source:/home/ricardo/Workspace/ogl/tutorial18_billboards_and_particles/tutorial18_particles.cpp
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	<algorithm>
+	<iostream>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<glm/gtx/norm.hpp>
+	<AntTweakBar.h>
+	"../common/shader.hpp"
+	"../common/texture.hpp"
+	"../common/controls.hpp"
 

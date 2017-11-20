@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/tutorial18_billboards_and_particles" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/" />
+				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -17,7 +17,7 @@
 			</Target>
 			<Target title="Release">
 				<Option output="bin/tutorial18_billboards_and_particles" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/" />
+				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -31,20 +31,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Linker>
-			<Add library="glfw3" />
-			<Add library="glew32" />
-			<Add library="opengl32" />
-			<Add library="gdi32" />
-			<Add library="common" />
-		</Linker>
-		<Unit filename="Particle.frag" />
-		<Unit filename="Particle.vert" />
-		<Unit filename="tutorial18_particles.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
 			<debugger />
+			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
