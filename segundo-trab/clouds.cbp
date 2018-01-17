@@ -36,23 +36,26 @@
 			<Add directory="../tutorial18_billboards_and_particles" />
 		</Compiler>
 		<Linker>
-			<Add library="libAntTweakBar" />
+			<Add library="glfw3" />
+			<Add library="glew32" />
+			<Add library="opengl32" />
 		</Linker>
-		<Unit filename="controls.cpp" />
-		<Unit filename="controls.hpp" />
-		<Unit filename="shader.cpp" />
-		<Unit filename="shader.hpp" />
-		<Unit filename="texture.cpp" />
-		<Unit filename="texture.hpp" />
 		<Unit filename="Particle.frag">
 			<Option target="Particles" />
 		</Unit>
 		<Unit filename="Particle.vert">
 			<Option target="Particles" />
 		</Unit>
+		<Unit filename="Perlin.hpp" />
 		<Unit filename="clouds.cpp">
 			<Option target="Particles" />
 		</Unit>
+		<Unit filename="controls.cpp" />
+		<Unit filename="controls.hpp" />
+		<Unit filename="shader.cpp" />
+		<Unit filename="shader.hpp" />
+		<Unit filename="texture.cpp" />
+		<Unit filename="texture.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

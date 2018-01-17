@@ -64,3 +64,68 @@
 	"../common/texture.hpp"
 	"../common/controls.hpp"
 
+1516212708 source:c:\users\ricardo\workspace\mate20-raytracing\segundo-trab\clouds.cpp
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	<algorithm>
+	<iostream>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<glm/gtx/norm.hpp>
+	<AntTweakBar.h>
+	"shader.hpp"
+	"texture.hpp"
+	"controls.hpp"
+
+1516036728 c:\users\ricardo\workspace\mate20-raytracing\segundo-trab\shader.hpp
+
+1516061388 c:\users\ricardo\workspace\mate20-raytracing\segundo-trab\texture.hpp
+
+1516036728 c:\users\ricardo\workspace\mate20-raytracing\segundo-trab\controls.hpp
+
+1516036728 source:c:\users\ricardo\workspace\mate20-raytracing\segundo-trab\controls.cpp
+	<GLFW/glfw3.h>
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	"controls.hpp"
+
+1516036728 source:c:\users\ricardo\workspace\mate20-raytracing\segundo-trab\shader.cpp
+	<stdio.h>
+	<string>
+	<vector>
+	<iostream>
+	<fstream>
+	<algorithm>
+	<stdlib.h>
+	<string.h>
+	<GL/glew.h>
+	"shader.hpp"
+
+1516063889 source:c:\users\ricardo\workspace\mate20-raytracing\segundo-trab\texture.cpp
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<string>
+	<iostream>
+	<fstream>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	"texture.hpp"
+	"Perlin.hpp"
+
+1516052663 c:\users\ricardo\workspace\mate20-raytracing\segundo-trab\perlin.hpp
+	<functional>
+	<array>
+	<random>
+	<math.h>
+	<stdlib.h>
+	<glm/detail/func_common.hpp>
+	<glm/geometric.hpp>
+	<glm/vec2.hpp>
+	<glm/vec3.hpp>
+	<glm/vec4.hpp>
+	<glm/mat2x2.hpp>
+

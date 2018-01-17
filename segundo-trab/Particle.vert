@@ -7,7 +7,9 @@ layout(location = 2) in vec4 color; // Position of the center of the particule a
 
 // Output data ; will be interpolated for each fragment.
 out vec2 UV;
-out vec4 particlecolor;
+out vec4 particleColor;
+out vec3 varyingNormalDirection;
+out vec3 varyingViewDirection;
 
 // Values that stay constant for the whole mesh.
 uniform vec3 CameraRight_worldspace;
@@ -18,17 +20,23 @@ void main()
 {
 	float particleSize = xyzs.w; // because we encoded it this way.
 	vec3 particleCenter_wordspace = xyzs.xyz;
-	
-	vec3 vertexPosition_worldspace = 
+
+	vec3 vertexPosition_worldspace =
 		particleCenter_wordspace
 		+ CameraRight_worldspace * squareVertices.x * particleSize
 		+ CameraUp_worldspace * squareVertices.y * particleSize;
 
-	// Output position of the vertex
+	// Posição espacial da particula :D
 	gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f);
 
-	// UV of the vertex. No special space for this one.
+	// Coordenadas UV do vertice
 	UV = squareVertices.xy + vec2(0.5, 0.5);
-	particlecolor = color;
+	particleColor = color;
+
+	// Ajuste para correção de silhueta
+	varyingNormalDirection = normalize(vec3(vec4(squareVertices, 1) * inverse(VP)));
+  varyingViewDirection = normalize(CameraUp_worldspace - vec3(VP * vec4(particleCenter_wordspace, 1)));
+
+
 }
 

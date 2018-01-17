@@ -8,7 +8,10 @@
 #include <GL/glew.h>
 
 #include <GLFW/glfw3.h>
+
 #include "texture.hpp"
+
+#include "Perlin.hpp"
 
 GLuint LoadBMP(const char * imagepath)
 {
@@ -272,6 +275,7 @@ GLuint loadDDS(const char * imagepath){
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
 
+
 	unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16;
 	unsigned int offset = 0;
 
@@ -292,9 +296,46 @@ GLuint loadDDS(const char * imagepath){
 
 	}
 
+  glTexEnvf(GL_TEXTURE_2D,GL_TEXTURE_ENV_MODE,GL_DECAL);
+
 	free(buffer);
 
 	return textureID;
 
+}
 
+using namespace Simplex;
+
+GLuint noiseTexture()
+{
+  glEnable(GL_TEXTURE_2D_ARRAY);
+  static GLubyte data[CELL_SIZE*CELL_SIZE];
+	for( size_t i = 0; i < CELL_RES * CELL_RES; ++i )
+  {
+		glm::ivec2 offset = glm::ivec2( i % CELL_RES, ( i / CELL_RES ) % CELL_RES ) * glm::ivec2( CELL_SIZE );
+		for( size_t x = 0; x < CELL_SIZE; ++x )
+		{
+			for( size_t y = 0; y < CELL_SIZE; ++y )
+			{
+				float n = 0.0f;
+				glm::vec2 position = ( glm::vec2( offset ) + glm::vec2( x, y ) ) * 0.01f;
+				n = fBm( position ) * 0.5f + 0.5f;
+				data[x+y*CELL_SIZE] = glm::clamp( n, 0.0f, 1.0f ) * 255;
+			}
+		}
+	}
+
+  GLuint textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);  //Always set the base and max mipmap levels of a texture.
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, CELL_SIZE, CELL_SIZE, 0, GL_RED, GL_UNSIGNED_INT, (GLvoid*)data);
+
+  glDisable(GL_TEXTURE_2D_ARRAY);
+
+  return textureID;
 }

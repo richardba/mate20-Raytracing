@@ -14,7 +14,10 @@ GLFWwindow* window;
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
 
+#ifdef ant
 #include <AntTweakBar.h>
+#endif // ant
+//#define RAD
 using namespace glm;
 using namespace std;
 
@@ -23,6 +26,8 @@ using namespace std;
 #include "controls.hpp"
 #define WINDOW_H 1024
 #define WINDOW_W 768
+
+const glm::vec4 clearColor(0.53f, 0.9f, 1.f, 0.0f);
 
 float inrand(float Min, float Max)
 {
@@ -76,7 +81,7 @@ void SortParticles()
 {
 	sort(&ParticlesContainer[0], &ParticlesContainer[MaxParticles]);
 }
-
+#ifdef ant
 inline void TwEventMouseButtonGLFW3(GLFWwindow* window, int button, int action, int mods)
 {TwEventMouseButtonGLFW(button, action);}
 inline void TwEventMousePosGLFW3(GLFWwindow* window, double xpos, double ypos)
@@ -89,6 +94,7 @@ inline void TwEventCharGLFW3(GLFWwindow* window, int codepoint)
 {TwEventCharGLFW(codepoint, GLFW_PRESS);}
 inline void TwWindowSizeGLFW3(GLFWwindow* window, int width, int height)
 {TwWindowSize(width, height);}
+#endif // ant
 
 int main( int argv, char** argc )
 {
@@ -132,6 +138,8 @@ int main( int argv, char** argc )
 
   glfwPollEvents();
   glfwSetCursorPos(window, WINDOW_H/2, WINDOW_W/2);
+
+#ifdef ant
   if(!TwInit(TW_OPENGL_CORE, NULL))
   {
     cout << "Failed to initialize AntTweakBar" << endl;
@@ -142,14 +150,17 @@ int main( int argv, char** argc )
   TwBar *myBar;
   myBar = TwNewBar("Acceleration");
   TwDefine("Acceleration label='o/l color -/+ speed' position='10 280' size='240 100' alpha=64 help=' ' ");
+
     glfwSetWindowSizeCallback(window, (GLFWwindowposfun)TwWindowSizeGLFW3);
 
     glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)TwEventMouseButtonGLFW3);
+
     glfwSetCursorPosCallback(window, (GLFWcursorposfun)TwEventMousePosGLFW3);
     glfwSetScrollCallback(window, (GLFWscrollfun)TwEventMouseWheelGLFW3);
     glfwSetKeyCallback(window, (GLFWkeyfun)TwEventKeyGLFW3);
     glfwSetCharCallback(window, (GLFWcharfun)TwEventCharGLFW3);
-	glClearColor(0.53f, 0.9f, 1.f, 0.0f);
+#endif // ant
+	glClearColor(clearColor.r,clearColor.g,clearColor.b,clearColor.a);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -157,14 +168,19 @@ int main( int argv, char** argc )
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
+	glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	GLuint programID = LoadShaders( "Particle.vert", "Particle.frag" );
+	GLuint programAtmosphere = LoadShaders( "Rayleigh.vert", "Rayleigh.frag" );
 
 	GLuint CameraRight_worldspace_ID  = glGetUniformLocation(programID, "CameraRight_worldspace");
 	GLuint CameraUp_worldspace_ID  = glGetUniformLocation(programID, "CameraUp_worldspace");
 	GLuint ViewProjMatrixID = glGetUniformLocation(programID, "VP");
 
 	GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
+
+
 
 
 	static GLfloat* g_particule_position_size_data = new GLfloat[MaxParticles * 4];
@@ -176,10 +192,18 @@ int main( int argv, char** argc )
 		ParticlesContainer[i].cameradistance = -1.0f;
 	}
 
-
-
 	GLuint tex = loadDDS("particle.DDS");
+//	GLuint tex = noiseTexture();
 
+  static const GLfloat g_atmosphere_data[] =
+  {
+    -1, -1, -1,
+     1, -1, -1,
+     1,  1, -1,
+    -1, -1, -1,
+     1,  1, -1,
+    -1,  1, -1
+  };
 	static const GLfloat g_vertex_buffer_data[] =
 	{
 		 -0.5f, -0.5f, 0.0f,
@@ -202,12 +226,20 @@ int main( int argv, char** argc )
 	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
 	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
 
+  GLuint atmosphere_vertex_buffer;
+	glGenBuffers(1, &atmosphere_vertex_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, atmosphere_vertex_buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_atmosphere_data), g_atmosphere_data, GL_STATIC_DRAW);
 
   float acceleration = 1.f;
   GLuint threshold = 192;
 
+#ifdef ant
   TwAddVarRO(myBar, "Acceleration", TW_TYPE_FLOAT, &acceleration, "");
   TwAddVarRO(myBar, "Threshold", TW_TYPE_INT16, &threshold, "");
+#endif // ant
+
+  bool use=false;
 	double lastTime = glfwGetTime();
 	do
 	{
@@ -228,7 +260,29 @@ int main( int argv, char** argc )
       threshold-=1;
     }
     GLuint Texture = tex;
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+		//Atmosphere
+		glUseProgram(programAtmosphere);
+
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, atmosphere_vertex_buffer);
+		glVertexAttribPointer(
+			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// Draw the triangle !
+		glDrawArrays(GL_TRIANGLES, 0, 2*3); // 3 indices starting at 0 -> 1 triangle
+
+    glDisableVertexAttribArray(0);
 
 		double currentTime = glfwGetTime();
 		double delta = currentTime - lastTime;
@@ -256,28 +310,28 @@ int main( int argv, char** argc )
 
 			float spread = 3.5f;
 			glm::vec3 maindir = glm::vec3(0.0f, 0.0f, 10.0f);
+    //Distribuição radial
+    #ifdef RAD
+      GLfloat phi = inrand(0,2*M_PI);
+      GLfloat cosTheta = inrand(-1,1);
+      GLfloat u = inrand(0,1);
+      GLfloat theta = acos(cosTheta);
+      GLfloat r = (float)distribution*cbrt(u);
 
-//			{
-//        GLfloat phi = inrand(0,2*M_PI);
-//        GLfloat cosTheta = inrand(-1,1);
-//        GLfloat u = inrand(0,1);
-//        GLfloat theta = acos(cosTheta);
-//        GLfloat r = (float)distribution*cbrt(u);
-//
-//        //Spherical Distribution
-//        glm::vec3 randomdir = glm::vec3(
-//          r * sin( theta) * cos( phi ),
-//          r * sin( theta) * sin( phi ),
-//          r * cos( theta )
-//        );
-//      }
-
+      glm::vec3 randomdir = glm::vec3(
+        r * sin( theta) * cos( phi ),
+        r * sin( theta) * sin( phi ),
+        r * cos( theta )
+      );
+    #else
+    //Distribuição linear
       glm::vec3 randomdir = glm::vec3(
 				(rand()%(int)(2*distribution) - distribution)/distribution,
 				(rand()%(int)(2*distribution) - distribution)/distribution,
 				(rand()%(int)(2*distribution) - distribution)/distribution
 			);
 
+    #endif // RAD
 			ParticlesContainer[particleIndex].speed = maindir + randomdir*spread;
 
       unsigned char w = inrand(threshold,256);
@@ -287,7 +341,6 @@ int main( int argv, char** argc )
 			ParticlesContainer[particleIndex].a = (rand() % 256) / 4;
 
 			ParticlesContainer[particleIndex].size = (rand()%(int)distribution)/(2*distribution) + inrand(0,1);
-
 		}
 
 		int ParticlesCount = 0;
@@ -338,9 +391,6 @@ int main( int argv, char** argc )
 		glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLubyte) * 4, g_particule_color_data);
 
 
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 		glUseProgram(programID);
 
 		glActiveTexture(GL_TEXTURE0);
@@ -388,10 +438,14 @@ int main( int argv, char** argc )
 		glVertexAttribDivisor(1, 1);
 		glVertexAttribDivisor(2, 1);
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticlesCount);
+		#ifdef ant
     TwDraw();
+    #endif // ant
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
+
+    //End of atmosphere
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
@@ -409,7 +463,9 @@ int main( int argv, char** argc )
 	glDeleteTextures(1, &tex);
 	glDeleteVertexArrays(1, &VertexArrayID);
 
+  #ifdef ant
 	TwTerminate();
+  #endif // ant
 	glfwTerminate();
 
 	return 0;

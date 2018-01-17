@@ -13,6 +13,7 @@ GLuint loadBMP_custom(const char * imagepath);
 // Load a .DDS file using GLFW's own loader
 GLuint loadDDS(const char * imagepath);
 
+GLuint noiseTexture();
 #pragma pack(2) // Add this
 typedef struct                       /**** BMP file header structure ****/
 {
@@ -39,4 +40,9 @@ typedef struct                       /**** BMP file info structure ****/
     unsigned int   biClrUsed;        /* Number of colors used */
     unsigned int   biClrImportant;   /* Number of important colors */
 } BITMAPINFOHEADER;
+
+#define RES	64
+#define CELL_RES 4
+#define CELL_SIZE RES / CELL_RES
+
 #endif
