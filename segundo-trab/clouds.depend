@@ -64,7 +64,7 @@
 	"../common/texture.hpp"
 	"../common/controls.hpp"
 
-1516212708 source:c:\users\ricardo\workspace\mate20-raytracing\segundo-trab\clouds.cpp
+1516212955 source:c:\users\ricardo\workspace\mate20-raytracing\segundo-trab\clouds.cpp
 	<stdio.h>
 	<stdlib.h>
 	<vector>

@@ -47,6 +47,8 @@
 			<Option target="Particles" />
 		</Unit>
 		<Unit filename="Perlin.hpp" />
+		<Unit filename="Rayleigh.frag" />
+		<Unit filename="Rayleigh.vert" />
 		<Unit filename="clouds.cpp">
 			<Option target="Particles" />
 		</Unit>
